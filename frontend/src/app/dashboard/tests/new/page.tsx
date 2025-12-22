@@ -19,7 +19,7 @@ import { Badge } from '@/components/ui/badge'
 import { Loading } from '@/components/ui/loading'
 import { Modal } from '@/components/ui/modal'
 import { assetsApi, testsApi } from '@/lib/api'
-import { formatAssetType } from '@/lib/utils'
+import { formatAssetType, getApiErrorMessage } from '@/lib/utils'
 
 const testSchema = z.object({
   test_type: z.string(),
@@ -133,7 +133,7 @@ export default function NewTestPage() {
       setResult(validation)
       setShowResultModal(true)
     } catch (error: any) {
-      toast.error(error.response?.data?.detail || 'Failed to submit test')
+      toast.error(getApiErrorMessage(error, 'Failed to submit test'))
     } finally {
       setIsLoading(false)
     }

@@ -8,11 +8,13 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import toast from 'react-hot-toast'
 import { Shield, ArrowRight } from 'lucide-react'
+import Cookies from 'js-cookie'
 
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { authApi, userApi } from '@/lib/api'
 import { useAuthStore } from '@/lib/store'
+import { getApiErrorMessage } from '@/lib/utils'
 
 const loginSchema = z.object({
   email: z.string().email('Invalid email address'),
@@ -38,13 +40,20 @@ export default function LoginPage() {
     setIsLoading(true)
     try {
       const tokens = await authApi.login(data.email, data.password)
+      
+      // Store tokens in cookies FIRST before calling getMe
+      // This ensures the Authorization header is set for the next request
+      Cookies.set('access_token', tokens.access_token, { expires: 1 })
+      Cookies.set('refresh_token', tokens.refresh_token, { expires: 7 })
+      
+      // Now fetch user info (token is available in cookies)
       const user = await userApi.getMe()
       
       login(tokens.access_token, tokens.refresh_token, user)
       toast.success('Welcome back!')
       router.push('/dashboard')
     } catch (error: any) {
-      toast.error(error.response?.data?.detail || 'Login failed')
+      toast.error(getApiErrorMessage(error, 'Login failed'))
     } finally {
       setIsLoading(false)
     }

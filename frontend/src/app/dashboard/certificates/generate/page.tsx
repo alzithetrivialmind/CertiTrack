@@ -19,7 +19,7 @@ import { Badge } from '@/components/ui/badge'
 import { Loading } from '@/components/ui/loading'
 import { Modal } from '@/components/ui/modal'
 import { assetsApi, testsApi, certificatesApi } from '@/lib/api'
-import { formatAssetType, formatDate } from '@/lib/utils'
+import { formatAssetType, formatDate, getApiErrorMessage } from '@/lib/utils'
 import { useAuthStore } from '@/lib/store'
 
 const certSchema = z.object({
@@ -112,7 +112,7 @@ export default function GenerateCertificatePage() {
       setShowSuccessModal(true)
       toast.success('Certificate generated successfully!')
     } catch (error: any) {
-      toast.error(error.response?.data?.detail || 'Failed to generate certificate')
+      toast.error(getApiErrorMessage(error, 'Failed to generate certificate'))
     } finally {
       setIsLoading(false)
     }

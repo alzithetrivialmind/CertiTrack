@@ -79,3 +79,42 @@ export function generateSlug(name: string): string {
     .replace(/(^-|-$)/g, '')
 }
 
+/**
+ * Extract error message from FastAPI error response
+ * Handles both validation errors (array) and simple string errors
+ */
+export function getApiErrorMessage(error: any, fallback: string = 'An error occurred'): string {
+  const detail = error?.response?.data?.detail
+  
+  // Handle FastAPI validation errors (array of objects with msg property)
+  if (Array.isArray(detail)) {
+    const messages = detail
+      .map((err: any) => err.msg || err.message || String(err))
+      .filter(Boolean)
+      .join(', ')
+    return messages || fallback
+  }
+  
+  // Handle simple string errors
+  if (typeof detail === 'string') {
+    return detail
+  }
+  
+  // Handle object with msg property
+  if (typeof detail === 'object' && detail?.msg) {
+    return String(detail.msg)
+  }
+  
+  // Handle error message in different location
+  if (error?.response?.data?.message) {
+    return String(error.response.data.message)
+  }
+  
+  // Handle standard Error objects
+  if (error?.message && typeof error.message === 'string') {
+    return error.message
+  }
+  
+  return fallback
+}
+

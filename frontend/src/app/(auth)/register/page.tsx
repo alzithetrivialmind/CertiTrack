@@ -12,7 +12,7 @@ import { Shield, ArrowRight } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { authApi } from '@/lib/api'
-import { generateSlug } from '@/lib/utils'
+import { generateSlug, getApiErrorMessage } from '@/lib/utils'
 
 const registerSchema = z.object({
   companyName: z.string().min(2, 'Company name is required'),
@@ -57,7 +57,7 @@ export default function RegisterPage() {
       toast.success('Account created! Please sign in.')
       router.push('/login')
     } catch (error: any) {
-      toast.error(error.response?.data?.detail || 'Registration failed')
+      toast.error(getApiErrorMessage(error, 'Registration failed'))
     } finally {
       setIsLoading(false)
     }

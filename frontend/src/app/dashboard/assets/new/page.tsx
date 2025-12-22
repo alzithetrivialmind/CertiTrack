@@ -15,6 +15,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Select } from '@/components/ui/select'
 import { assetsApi } from '@/lib/api'
+import { getApiErrorMessage } from '@/lib/utils'
 
 const assetSchema = z.object({
   name: z.string().min(2, 'Name is required'),
@@ -104,7 +105,7 @@ export default function NewAssetPage() {
       toast.success('Asset created successfully')
       router.push('/dashboard/assets')
     } catch (error: any) {
-      toast.error(error.response?.data?.detail || 'Failed to create asset')
+      toast.error(getApiErrorMessage(error, 'Failed to create asset'))
     } finally {
       setIsLoading(false)
     }

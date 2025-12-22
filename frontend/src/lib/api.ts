@@ -89,18 +89,21 @@ export const authApi = {
     admin_password: string
     admin_name: string
   }) => {
-    const response = await api.post('/auth/register-company', null, {
-      params: {
-        admin_email: data.admin_email,
-        admin_password: data.admin_password,
-        admin_name: data.admin_name,
-      },
-      data: {
+    // Backend expects company data in body and admin info as query params
+    const queryParams = new URLSearchParams({
+      admin_email: data.admin_email,
+      admin_password: data.admin_password,
+      admin_name: data.admin_name,
+    })
+    
+    const response = await api.post(
+      `/auth/register-company?${queryParams.toString()}`,
+      {
         name: data.name,
         slug: data.slug,
         email: data.email,
-      },
-    })
+      }
+    )
     return response.data
   },
 }

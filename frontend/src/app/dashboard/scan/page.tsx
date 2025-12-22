@@ -20,7 +20,7 @@ import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { Loading } from '@/components/ui/loading'
 import { assetsApi } from '@/lib/api'
-import { formatAssetType } from '@/lib/utils'
+import { formatAssetType, getApiErrorMessage } from '@/lib/utils'
 
 export default function ScanPage() {
   const router = useRouter()
@@ -73,7 +73,7 @@ export default function ScanPage() {
         scannerRef.current.clear()
       }
     } catch (error: any) {
-      toast.error(error.response?.data?.detail || 'Asset not found')
+      toast.error(getApiErrorMessage(error, 'Asset not found'))
     } finally {
       setIsLoading(false)
     }

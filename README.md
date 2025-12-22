@@ -80,14 +80,61 @@ CertiTrack/
 
 ## 🚀 Getting Started
 
-### Prerequisites
+Choose one of the following setup methods:
 
-- Python 3.11+
+---
+
+### 🐳 Option 1: Docker (Recommended)
+
+The easiest way to run CertiTrack with all services (PostgreSQL, Redis, Backend, Frontend).
+
+**Prerequisites:**
+- Docker Desktop installed and running
+
+**Steps:**
+
+```bash
+# Navigate to project root
+cd CertiTrack
+
+# Build and start all services
+docker-compose up -d --build
+
+# Check services are running
+docker-compose ps
+
+# View logs
+docker-compose logs -f
+```
+
+**Access:**
+- 🌐 **Frontend**: http://localhost:3000
+- 🔌 **API**: http://localhost:8000
+- 📚 **API Docs**: http://localhost:8000/api/docs
+
+**Manage:**
+```bash
+# Stop all services
+docker-compose down
+
+# Restart a specific service
+docker-compose restart frontend
+
+# Rebuild after code changes
+docker-compose up -d --build
+```
+
+---
+
+### 💻 Option 2: Local Development with SQLite
+
+Run locally without Docker, using SQLite for simplicity.
+
+**Prerequisites:**
+- Python 3.11+ (Note: Python 3.12 recommended, 3.14 may have compatibility issues)
 - Node.js 18+
-- PostgreSQL 14+
-- Redis (for scheduled tasks)
 
-### Backend Setup
+**Backend Setup:**
 
 ```bash
 # Navigate to backend
@@ -95,32 +142,28 @@ cd CertiTrack/backend
 
 # Create virtual environment
 python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
+
+# Activate virtual environment
+# On Windows:
+venv\Scripts\activate
+# On macOS/Linux:
+source venv/bin/activate
 
 # Install dependencies
 pip install -r requirements.txt
 
-# Copy environment config
-cp config.example.env .env
-# Edit .env with your settings
+# Install SQLite async driver
+pip install aiosqlite
 
-# Create database
-createdb certitrack
-
-# Run migrations (if using Alembic)
-alembic upgrade head
-
-# Start server
+# Start server (uses SQLite by default)
 python run.py
-# or
-uvicorn app.main:app --reload
 ```
 
-API will be available at: http://localhost:8000
+The backend will automatically:
+- Create a `certitrack.db` SQLite database file
+- Initialize all tables on startup
 
-API Documentation: http://localhost:8000/api/docs
-
-### Frontend Setup
+**Frontend Setup:**
 
 ```bash
 # Navigate to frontend
@@ -133,7 +176,79 @@ npm install
 npm run dev
 ```
 
-Frontend will be available at: http://localhost:3000
+**Access:**
+- 🌐 **Frontend**: http://localhost:3000
+- 🔌 **API**: http://localhost:8000
+- 📚 **API Docs**: http://localhost:8000/api/docs
+
+---
+
+### 🐘 Option 3: Local Development with PostgreSQL
+
+For production-like environment.
+
+**Prerequisites:**
+- Python 3.11+
+- Node.js 18+
+- PostgreSQL 14+ installed and running
+- Redis (optional, for scheduled tasks)
+
+**Backend Setup:**
+
+```bash
+# Navigate to backend
+cd CertiTrack/backend
+
+# Create virtual environment
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Create database
+createdb certitrack
+
+# Set environment variable for PostgreSQL
+# On Windows PowerShell:
+$env:DATABASE_URL = "postgresql+asyncpg://postgres:password@localhost:5432/certitrack"
+# On macOS/Linux:
+export DATABASE_URL="postgresql+asyncpg://postgres:password@localhost:5432/certitrack"
+
+# Start server
+python run.py
+```
+
+**Frontend Setup:**
+
+```bash
+# Navigate to frontend
+cd CertiTrack/frontend
+
+# Install dependencies
+npm install
+
+# Start development server
+npm run dev
+```
+
+---
+
+### 🔑 First Login
+
+After setup, you need to create an account:
+
+1. Open http://localhost:3000/register
+2. Fill in company details and create admin account
+3. Login at http://localhost:3000/login
+
+Or use API directly:
+```bash
+# Register company via API
+curl -X POST "http://localhost:8000/api/v1/auth/register-company?admin_email=admin@test.com&admin_password=password123&admin_name=Admin" \
+  -H "Content-Type: application/json" \
+  -d '{"name": "My Company", "slug": "my-company", "email": "company@test.com"}'
+```
 
 ## 📋 API Endpoints
 
