@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import Link from 'next/link'
+import toast from 'react-hot-toast'
 import { Plus, Eye, Download, ExternalLink } from 'lucide-react'
 
 import { Header } from '@/components/layout/header'
@@ -12,8 +13,8 @@ import { Select } from '@/components/ui/select'
 import { Badge } from '@/components/ui/badge'
 import { Loading } from '@/components/ui/loading'
 import { EmptyState } from '@/components/ui/empty-state'
-import { certificatesApi } from '@/lib/api'
-import { formatDate } from '@/lib/utils'
+import { certificatesApi, api } from '@/lib/api'
+import { formatDate, getApiErrorMessage } from '@/lib/utils'
 
 const statusOptions = [
   { value: '', label: 'All Status' },
@@ -27,6 +28,31 @@ export default function CertificatesPage() {
   const [page, setPage] = useState(1)
   const [status, setStatus] = useState('')
   const [expiringOnly, setExpiringOnly] = useState(false)
+  const [downloadingId, setDownloadingId] = useState<string | null>(null)
+
+  const handleDownload = async (certId: string, certNumber: string) => {
+    setDownloadingId(certId)
+    try {
+      const response = await api.get(`/certificates/${certId}/download`, {
+        responseType: 'blob',
+      })
+      
+      const url = window.URL.createObjectURL(new Blob([response.data]))
+      const link = document.createElement('a')
+      link.href = url
+      link.setAttribute('download', `Certificate_${certNumber}.pdf`)
+      document.body.appendChild(link)
+      link.click()
+      link.remove()
+      window.URL.revokeObjectURL(url)
+      
+      toast.success('Certificate downloaded!')
+    } catch (error: any) {
+      toast.error(getApiErrorMessage(error, 'Failed to download certificate'))
+    } finally {
+      setDownloadingId(null)
+    }
+  }
 
   const { data: certificates, isLoading } = useQuery({
     queryKey: ['certificates', page, status, expiringOnly],
@@ -131,15 +157,14 @@ export default function CertificatesPage() {
                             </Button>
                           </Link>
                           {cert.pdf_url && (
-                            <a
-                              href={certificatesApi.download(cert.id)}
-                              target="_blank"
-                              rel="noopener noreferrer"
+                            <Button 
+                              variant="ghost" 
+                              size="sm"
+                              onClick={() => handleDownload(cert.id, cert.certificate_number)}
+                              disabled={downloadingId === cert.id}
                             >
-                              <Button variant="ghost" size="sm">
-                                <Download className="w-4 h-4" />
-                              </Button>
-                            </a>
+                              <Download className={`w-4 h-4 ${downloadingId === cert.id ? 'animate-pulse' : ''}`} />
+                            </Button>
                           )}
                           <a
                             href={`/verify/${cert.certificate_number}`}

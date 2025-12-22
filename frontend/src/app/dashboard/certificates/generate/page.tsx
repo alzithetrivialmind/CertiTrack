@@ -18,7 +18,7 @@ import { Select } from '@/components/ui/select'
 import { Badge } from '@/components/ui/badge'
 import { Loading } from '@/components/ui/loading'
 import { Modal } from '@/components/ui/modal'
-import { assetsApi, testsApi, certificatesApi } from '@/lib/api'
+import { assetsApi, testsApi, certificatesApi, api } from '@/lib/api'
 import { formatAssetType, formatDate, getApiErrorMessage } from '@/lib/utils'
 import { useAuthStore } from '@/lib/store'
 
@@ -55,8 +55,34 @@ export default function GenerateCertificatePage() {
   const { user } = useAuthStore()
 
   const [isLoading, setIsLoading] = useState(false)
+  const [isDownloading, setIsDownloading] = useState(false)
   const [certificate, setCertificate] = useState<any>(null)
   const [showSuccessModal, setShowSuccessModal] = useState(false)
+
+  const handleDownload = async () => {
+    if (!certificate) return
+    setIsDownloading(true)
+    try {
+      const response = await api.get(`/certificates/${certificate.id}/download`, {
+        responseType: 'blob',
+      })
+      
+      const url = window.URL.createObjectURL(new Blob([response.data]))
+      const link = document.createElement('a')
+      link.href = url
+      link.setAttribute('download', `Certificate_${certificate.certificate_number}.pdf`)
+      document.body.appendChild(link)
+      link.click()
+      link.remove()
+      window.URL.revokeObjectURL(url)
+      
+      toast.success('Certificate downloaded!')
+    } catch (error: any) {
+      toast.error(getApiErrorMessage(error, 'Failed to download certificate'))
+    } finally {
+      setIsDownloading(false)
+    }
+  }
 
   const { data: asset, isLoading: assetLoading } = useQuery({
     queryKey: ['asset', assetId],
@@ -345,17 +371,15 @@ export default function GenerateCertificatePage() {
                 View All Certificates
               </Button>
               {certificate.pdf_url && (
-                <a
-                  href={certificatesApi.download(certificate.id)}
-                  target="_blank"
-                  rel="noopener noreferrer"
+                <Button 
+                  variant="accent" 
                   className="flex-1"
+                  onClick={handleDownload}
+                  isLoading={isDownloading}
                 >
-                  <Button variant="accent" className="w-full">
-                    <Download className="w-4 h-4 mr-2" />
-                    Download PDF
-                  </Button>
-                </a>
+                  <Download className="w-4 h-4 mr-2" />
+                  Download PDF
+                </Button>
               )}
             </div>
           </div>
