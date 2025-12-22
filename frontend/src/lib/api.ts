@@ -239,6 +239,11 @@ export const testsApi = {
     const response = await api.post(`/tests/${id}/validate`)
     return response.data
   },
+
+  listByAsset: async (assetId: string) => {
+    const response = await api.get('/tests', { params: { asset_id: assetId } })
+    return response.data
+  },
 }
 
 // Certificates API
@@ -286,6 +291,11 @@ export const certificatesApi = {
 
   download: (id: string) => {
     return `${API_URL}/certificates/${id}/download`
+  },
+
+  listByAsset: async (assetId: string) => {
+    const response = await api.get('/certificates', { params: { asset_id: assetId } })
+    return response.data
   },
 }
 

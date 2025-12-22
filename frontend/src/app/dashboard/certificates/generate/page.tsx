@@ -122,11 +122,19 @@ export default function GenerateCertificatePage() {
     return (
       <div>
         <Header title="Generate Certificate" />
-        <div className="p-6 text-center">
-          <p className="text-dark-500 mb-4">No asset selected</p>
-          <Link href="/dashboard/assets">
-            <Button>Select Asset</Button>
-          </Link>
+        <div className="p-6 text-center py-20">
+          <div className="max-w-md mx-auto">
+            <div className="w-16 h-16 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <FileCheck className="w-8 h-8 text-primary-500" />
+            </div>
+            <h2 className="text-xl font-bold text-dark-900 mb-2">No Asset Selected</h2>
+            <p className="text-dark-500 mb-6">
+              Select an asset to generate a certificate for it
+            </p>
+            <Link href="/dashboard/assets?mode=select&returnTo=/dashboard/certificates/generate">
+              <Button>Select Asset</Button>
+            </Link>
+          </div>
         </div>
       </div>
     )

@@ -15,6 +15,7 @@ import {
   QrCode,
   ChevronLeft,
   ChevronRight,
+  CheckCircle2,
 } from 'lucide-react'
 
 import { Header } from '@/components/layout/header'
@@ -50,11 +51,21 @@ export default function AssetsPage() {
   const router = useRouter()
   const searchParams = useSearchParams()
   
+  // Check if in select mode (for certificate generation)
+  const selectMode = searchParams.get('mode') === 'select'
+  const returnTo = searchParams.get('returnTo') || '/dashboard/certificates/generate'
+  
   const [search, setSearch] = useState(searchParams.get('search') || '')
   const [category, setCategory] = useState(searchParams.get('category') || '')
   const [status, setStatus] = useState(searchParams.get('status') || '')
   const [page, setPage] = useState(1)
   const pageSize = 20
+
+  const handleSelectAsset = (assetId: string) => {
+    if (selectMode) {
+      router.push(`${returnTo}?asset_id=${assetId}`)
+    }
+  }
 
   const { data, isLoading } = useQuery({
     queryKey: ['assets', page, search, category, status],
@@ -75,9 +86,24 @@ export default function AssetsPage() {
 
   return (
     <div>
-      <Header title="Assets" />
+      <Header title={selectMode ? "Select Asset" : "Assets"} />
 
       <div className="p-6 space-y-6">
+        {/* Select Mode Banner */}
+        {selectMode && (
+          <div className="bg-primary-50 border border-primary-200 rounded-gum p-4 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <CheckCircle2 className="w-5 h-5 text-primary-500" />
+              <span className="text-dark-700">
+                Select an asset to generate certificate
+              </span>
+            </div>
+            <Link href="/dashboard/certificates">
+              <Button variant="outline" size="sm">Cancel</Button>
+            </Link>
+          </div>
+        )}
+
         {/* Actions Bar */}
         <div className="flex flex-col md:flex-row gap-4 justify-between">
           <form onSubmit={handleSearch} className="flex gap-3 flex-1">
@@ -105,11 +131,13 @@ export default function AssetsPage() {
             />
           </form>
 
-          <Link href="/dashboard/assets/new">
-            <Button leftIcon={<Plus className="w-4 h-4" />}>
-              Add Asset
-            </Button>
-          </Link>
+          {!selectMode && (
+            <Link href="/dashboard/assets/new">
+              <Button leftIcon={<Plus className="w-4 h-4" />}>
+                Add Asset
+              </Button>
+            </Link>
+          )}
         </div>
 
         {/* Assets Table */}
@@ -146,19 +174,29 @@ export default function AssetsPage() {
                       const expiryStatus = daysUntil !== null ? getExpiryStatus(daysUntil) : null
 
                       return (
-                        <tr key={asset.id}>
+                        <tr 
+                          key={asset.id}
+                          className={selectMode ? 'cursor-pointer hover:bg-primary-50' : ''}
+                          onClick={() => selectMode && handleSelectAsset(asset.id)}
+                        >
                           <td>
                             <div className="flex items-center gap-3">
                               <div className="w-10 h-10 bg-primary-100 rounded-gum flex items-center justify-center text-primary-500 font-bold">
                                 {asset.name.charAt(0)}
                               </div>
                               <div>
-                                <Link
-                                  href={`/dashboard/assets/${asset.id}`}
-                                  className="font-medium text-dark-900 hover:text-primary-500"
-                                >
-                                  {asset.name}
-                                </Link>
+                                {selectMode ? (
+                                  <span className="font-medium text-dark-900">
+                                    {asset.name}
+                                  </span>
+                                ) : (
+                                  <Link
+                                    href={`/dashboard/assets/${asset.id}`}
+                                    className="font-medium text-dark-900 hover:text-primary-500"
+                                  >
+                                    {asset.name}
+                                  </Link>
+                                )}
                                 <p className="text-sm text-dark-500">{asset.asset_code}</p>
                               </div>
                             </div>
@@ -202,21 +240,35 @@ export default function AssetsPage() {
                             <Badge status={asset.status} />
                           </td>
                           <td>
-                            <div className="flex items-center gap-1">
-                              <Link href={`/dashboard/assets/${asset.id}`}>
-                                <Button variant="ghost" size="sm">
-                                  <Eye className="w-4 h-4" />
-                                </Button>
-                              </Link>
-                              <Link href={`/dashboard/assets/${asset.id}/edit`}>
-                                <Button variant="ghost" size="sm">
-                                  <Edit className="w-4 h-4" />
-                                </Button>
-                              </Link>
-                              <Button variant="ghost" size="sm">
-                                <QrCode className="w-4 h-4" />
+                            {selectMode ? (
+                              <Button 
+                                size="sm" 
+                                onClick={(e) => {
+                                  e.stopPropagation()
+                                  handleSelectAsset(asset.id)
+                                }}
+                              >
+                                Select
                               </Button>
-                            </div>
+                            ) : (
+                              <div className="flex items-center gap-1">
+                                <Link href={`/dashboard/assets/${asset.id}`}>
+                                  <Button variant="ghost" size="sm">
+                                    <Eye className="w-4 h-4" />
+                                  </Button>
+                                </Link>
+                                <Link href={`/dashboard/assets/${asset.id}/edit`}>
+                                  <Button variant="ghost" size="sm">
+                                    <Edit className="w-4 h-4" />
+                                  </Button>
+                                </Link>
+                                <Link href={`/dashboard/assets/${asset.id}`}>
+                                  <Button variant="ghost" size="sm">
+                                    <QrCode className="w-4 h-4" />
+                                  </Button>
+                                </Link>
+                              </div>
+                            )}
                           </td>
                         </tr>
                       )
