@@ -126,7 +126,7 @@ class Asset(Base):
     certificate_expiry_date: Mapped[Optional[date]] = mapped_column(Date)
     
     # Additional Data (flexible JSON field)
-    metadata: Mapped[Optional[dict]] = mapped_column(JSONB, default=dict)
+    extra_data: Mapped[Optional[dict]] = mapped_column(JSONB, default=dict)
     
     # Photo
     photo_url: Mapped[Optional[str]] = mapped_column(String(500))
