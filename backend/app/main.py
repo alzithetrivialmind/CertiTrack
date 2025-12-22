@@ -36,6 +36,7 @@ async def lifespan(app: FastAPI):
 # Create FastAPI app
 app = FastAPI(
     title="CertiTrack API",
+    redirect_slashes=False,  # Prevent redirect that breaks CORS
     description="""
     ## Digital Testing & Certification Platform
     
