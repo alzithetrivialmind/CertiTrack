@@ -22,7 +22,7 @@ from app.services.qr_service import generate_qr_code
 router = APIRouter()
 
 
-@router.get("/", response_model=AssetListResponse)
+@router.get("", response_model=AssetListResponse)
 async def list_assets(
     page: int = Query(1, ge=1),
     page_size: int = Query(20, ge=1, le=100),
@@ -110,7 +110,7 @@ async def list_assets(
     )
 
 
-@router.post("/", response_model=AssetResponse, status_code=status.HTTP_201_CREATED)
+@router.post("", response_model=AssetResponse, status_code=status.HTTP_201_CREATED)
 async def create_asset(
     asset_data: AssetCreate,
     current_user: User = Depends(require_inspector),

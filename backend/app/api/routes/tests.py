@@ -23,7 +23,7 @@ from app.services.test_service import validate_test_result, generate_test_number
 router = APIRouter()
 
 
-@router.get("/", response_model=List[TestResponse])
+@router.get("", response_model=List[TestResponse])
 async def list_tests(
     page: int = Query(1, ge=1),
     page_size: int = Query(20, ge=1, le=100),
@@ -62,7 +62,7 @@ async def list_tests(
     return tests
 
 
-@router.post("/", response_model=TestResponse, status_code=status.HTTP_201_CREATED)
+@router.post("", response_model=TestResponse, status_code=status.HTTP_201_CREATED)
 async def create_test(
     test_data: TestCreate,
     current_user: User = Depends(require_inspector),

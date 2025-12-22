@@ -45,7 +45,7 @@ async def update_current_user(
     return current_user
 
 
-@router.get("/", response_model=List[UserResponse])
+@router.get("", response_model=List[UserResponse])
 async def list_users(
     skip: int = 0,
     limit: int = 100,

@@ -29,7 +29,7 @@ from app.services.certificate_service import (
 router = APIRouter()
 
 
-@router.get("/", response_model=List[CertificateResponse])
+@router.get("", response_model=List[CertificateResponse])
 async def list_certificates(
     page: int = Query(1, ge=1),
     page_size: int = Query(20, ge=1, le=100),
