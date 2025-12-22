@@ -44,8 +44,8 @@ httpx==0.26.0
 aiofiles==23.2.1
 python-dateutil==2.8.2
 
-# ERPNext Integration (future)
-frappe-client==2.0.0
+# ERPNext Integration (future - install when needed)
+# frappe-client  # Uncomment when integrating with ERPNext
 
 # Development
 pytest==7.4.4
