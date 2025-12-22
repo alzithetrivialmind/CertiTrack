@@ -86,7 +86,7 @@ class AssetResponse(AssetBase):
     certificate_expiry_date: Optional[date]
     
     photo_url: Optional[str]
-    metadata: Optional[dict]
+    extra_data: Optional[dict]
     
     # Computed fields
     is_certificate_expiring_soon: bool = False
