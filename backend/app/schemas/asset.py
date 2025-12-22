@@ -39,7 +39,7 @@ class AssetCreate(AssetBase):
     """Schema for creating an asset"""
     company_id: Optional[UUID] = None  # Auto-set from auth context
     certificate_expiry_date: Optional[date] = None
-    metadata: Optional[dict] = None
+    extra_data: Optional[dict] = None
 
 
 class AssetUpdate(BaseModel):
@@ -68,7 +68,7 @@ class AssetUpdate(BaseModel):
     next_inspection_date: Optional[date] = None
     certificate_expiry_date: Optional[date] = None
     
-    metadata: Optional[dict] = None
+    extra_data: Optional[dict] = None
     photo_url: Optional[str] = None
 
 
