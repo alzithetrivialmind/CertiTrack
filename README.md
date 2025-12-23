@@ -1,359 +1,186 @@
-# CertiTrack - Digital Testing & Certification Platform
+# CertiTrack
 
-![CertiTrack](https://img.shields.io/badge/CertiTrack-v1.0.0-ff6b35)
-![Python](https://img.shields.io/badge/Python-3.11+-blue)
-![Next.js](https://img.shields.io/badge/Next.js-14-black)
-![License](https://img.shields.io/badge/License-MIT-green)
-
-**CertiTrack** is a SaaS platform for managing heavy equipment testing, certification, and compliance tracking. Designed for shipyards, inspection vendors, and heavy logistics companies.
-
-## 🎯 Key Features
-
-### ✅ Asset Registry
-Complete database for tracking all types of heavy equipment:
-- Cranes (Overhead, Mobile, Tower, Gantry)
-- Load Cells & Weighing Scales
-- Shackles, Wire Rope, Chain Slings
-- Forklifts & Transport Equipment
-
-### 🔔 Automatic Alerts
-- Email/WhatsApp notifications 30 days before certificate expiry
-- Dashboard alerts for critical and warning status
-- Never miss an audit deadline again
-
-### 📱 QR Code Tracking
-- Generate unique QR codes for each asset
-- Field workers scan to access records instantly
-- Input test data directly from mobile device
-
-### 🤖 Auto Validation
-- System automatically validates pass/fail based on test data
-- Eliminates human error in result calculation
-- Validates load test, deflection, and deformation parameters
-
-### 📄 One-Click Certificates
-- Professional PDF certificates generated instantly
-- Digitally signed with verification capability
-- Public verification endpoint for authenticity
-
-### 🔗 ERPNext Ready
-- Built with Python FastAPI for native integration
-- REST API compatible with ERPNext
-- Easy data sync with existing ERP systems
-
-## 🏗️ Architecture
-
-```
-CertiTrack/
-├── backend/                 # FastAPI Python Backend
-│   ├── app/
-│   │   ├── api/            # API Routes
-│   │   ├── models/         # SQLAlchemy Models
-│   │   ├── schemas/        # Pydantic Schemas
-│   │   └── services/       # Business Logic
-│   ├── static/             # Generated files (QR, PDFs)
-│   └── requirements.txt
-│
-├── frontend/               # Next.js Frontend
-│   ├── src/
-│   │   ├── app/           # App Router Pages
-│   │   ├── components/    # React Components
-│   │   └── lib/           # Utilities & API Client
-│   └── package.json
-│
-└── README.md
-```
-
-## 🛠️ Tech Stack
-
-| Component | Technology |
-|-----------|------------|
-| **Frontend** | Next.js 14, TypeScript, Tailwind CSS |
-| **Backend** | FastAPI, Python 3.11+ |
-| **Database** | PostgreSQL |
-| **ORM** | SQLAlchemy (async) |
-| **Auth** | JWT (OAuth2) |
-| **PDF** | ReportLab |
-| **QR Code** | python-qrcode |
-| **Queue** | Celery + Redis |
-| **Charts** | Recharts |
-
-## 🚀 Getting Started
-
-Choose one of the following setup methods:
+**Digital Testing & Certification Platform for Heavy Equipment**
 
 ---
 
-### 🐳 Option 1: Docker (Recommended)
+## The Problem
 
-The easiest way to run CertiTrack with all services (PostgreSQL, Redis, Backend, Frontend).
+In Indonesian shipyards (galangan kapal), heavy lifting equipment like cranes, shackles, and wire ropes must be tested and certified regularly. This is not optional—it's a legal requirement under Permenaker No. 8/2020 and international maritime standards.
 
-**Prerequisites:**
-- Docker Desktop installed and running
+Yet the reality on the ground is far from compliant.
 
-**Steps:**
+### What Actually Happens
 
-```bash
-# Navigate to project root
-cd CertiTrack
+**1. Paper Chaos**
 
-# Build and start all services
-docker-compose up -d --build
+Certificates live in filing cabinets. Test records are scattered across Excel files, WhatsApp groups, and handwritten logbooks. When an auditor asks for documentation, staff spend hours—sometimes days—digging through archives.
 
-# Check services are running
-docker-compose ps
+One shipyard manager told us: *"We have 200+ assets. Finding one certificate can take half a day."*
 
-# View logs
-docker-compose logs -f
-```
+**2. Expired Certificates Go Unnoticed**
 
-**Access:**
-- 🌐 **Frontend**: http://localhost:3000
-- 🔌 **API**: http://localhost:8000
-- 📚 **API Docs**: http://localhost:8000/api/docs
+There is no system to track expiry dates. Equipment continues to operate with expired certifications until someone manually checks, or worse, until an accident happens.
 
-**Manage:**
-```bash
-# Stop all services
-docker-compose down
+A crane with an expired certificate is a liability waiting to become a headline.
 
-# Restart a specific service
-docker-compose restart frontend
+**3. Human Error in Test Validation**
 
-# Rebuild after code changes
-docker-compose up -d --build
-```
+Inspectors record test results manually. A load test requires comparing the applied load against the Safe Working Load (SWL), calculating percentages, and determining pass/fail. This is done by hand, often under time pressure.
+
+Mistakes happen. A shackle rated for 10 tons gets approved after a 15-ton test load that should have flagged it. The paperwork says "PASS" because someone misread the numbers.
+
+**4. Certificate Fraud is Too Easy**
+
+Paper certificates can be photocopied, altered, or fabricated entirely. There is no way for clients, auditors, or port authorities to verify authenticity without calling the issuing company directly.
+
+**5. No Visibility Across Operations**
+
+Management has no dashboard. No real-time view of how many assets are compliant, how many are due for testing, or which equipment poses risk. Decisions are made on gut feeling, not data.
 
 ---
 
-### 💻 Option 2: Local Development with SQLite
+## The Cost
 
-Run locally without Docker, using SQLite for simplicity.
+| Risk | Consequence |
+|------|-------------|
+| Workplace accident from equipment failure | Fatalities, permanent injuries |
+| Failed audit | Operations suspended, contracts lost |
+| Regulatory penalties | Fines, license revocation |
+| Insurance claim denied | Equipment not properly certified |
+| Reputation damage | Loss of future contracts |
 
-**Prerequisites:**
-- Python 3.11+ (Note: Python 3.12 recommended, 3.14 may have compatibility issues)
-- Node.js 18+
-
-**Backend Setup:**
-
-```bash
-# Navigate to backend
-cd CertiTrack/backend
-
-# Create virtual environment
-python -m venv venv
-
-# Activate virtual environment
-# On Windows:
-venv\Scripts\activate
-# On macOS/Linux:
-source venv/bin/activate
-
-# Install dependencies
-pip install -r requirements.txt
-
-# Install SQLite async driver
-pip install aiosqlite
-
-# Start server (uses SQLite by default)
-python run.py
-```
-
-The backend will automatically:
-- Create a `certitrack.db` SQLite database file
-- Initialize all tables on startup
-
-**Frontend Setup:**
-
-```bash
-# Navigate to frontend
-cd CertiTrack/frontend
-
-# Install dependencies
-npm install
-
-# Start development server
-npm run dev
-```
-
-**Access:**
-- 🌐 **Frontend**: http://localhost:3000
-- 🔌 **API**: http://localhost:8000
-- 📚 **API Docs**: http://localhost:8000/api/docs
+These are not hypothetical. They happen every year in shipyards across Indonesia.
 
 ---
 
-### 🐘 Option 3: Local Development with PostgreSQL
+## The Solution
 
-For production-like environment.
+CertiTrack replaces paper-based certification management with a digital system designed specifically for heavy equipment testing.
 
-**Prerequisites:**
-- Python 3.11+
-- Node.js 18+
-- PostgreSQL 14+ installed and running
-- Redis (optional, for scheduled tasks)
+### Core Workflow
 
-**Backend Setup:**
-
-```bash
-# Navigate to backend
-cd CertiTrack/backend
-
-# Create virtual environment
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-
-# Install dependencies
-pip install -r requirements.txt
-
-# Create database
-createdb certitrack
-
-# Set environment variable for PostgreSQL
-# On Windows PowerShell:
-$env:DATABASE_URL = "postgresql+asyncpg://postgres:password@localhost:5432/certitrack"
-# On macOS/Linux:
-export DATABASE_URL="postgresql+asyncpg://postgres:password@localhost:5432/certitrack"
-
-# Start server
-python run.py
+```
+Register Asset → Conduct Test → System Validates → Generate Certificate
 ```
 
-**Frontend Setup:**
+That's it. No spreadsheets. No manual calculations. No paper to lose.
 
-```bash
-# Navigate to frontend
-cd CertiTrack/frontend
+### How It Works
 
-# Install dependencies
-npm install
+**Asset Registry**
 
-# Start development server
-npm run dev
-```
+Every piece of equipment gets a digital record: serial number, manufacturer, Safe Working Load, location, and a unique QR code. Scan the QR with any phone to instantly access the asset's complete history.
+
+**Automated Test Validation**
+
+When an inspector submits test results, the system automatically validates pass/fail based on defined criteria:
+
+- Load test: Did applied load exceed 110% of SWL without permanent deformation?
+- Visual inspection: Are all checklist items marked as acceptable?
+- Measurement: Are deflection values within tolerance?
+
+No mental math. No subjective judgment on borderline cases. The system applies the rules consistently, every time.
+
+**Digital Certificates**
+
+One click generates a professional PDF certificate with:
+
+- Unique certificate number
+- QR code linking to verification page
+- Digital signature
+- Complete test data
+
+Anyone can scan the QR code to verify the certificate is authentic and current. Fraud becomes impossible.
+
+**Expiry Tracking**
+
+The system knows when every certificate expires. At 30 days, 14 days, and 7 days before expiry, it sends alerts. No asset slips through the cracks.
+
+**Management Dashboard**
+
+Real-time visibility:
+
+- Total assets by category and status
+- Certificates expiring this month
+- Test pass/fail rates
+- Compliance percentage across the fleet
+
+Make decisions based on data, not assumptions.
 
 ---
 
-### 🔑 First Login
+## Who This Is For
 
-After setup, you need to create an account:
+**Shipyards (Galangan Kapal)**
 
-1. Open http://localhost:3000/register
-2. Fill in company details and create admin account
-3. Login at http://localhost:3000/login
+You operate dozens or hundreds of cranes, hoists, and lifting accessories. Compliance is mandatory for port operations. CertiTrack keeps you audit-ready at all times.
 
-Or use API directly:
-```bash
-# Register company via API
-curl -X POST "http://localhost:8000/api/v1/auth/register-company?admin_email=admin@test.com&admin_password=password123&admin_name=Admin" \
-  -H "Content-Type: application/json" \
-  -d '{"name": "My Company", "slug": "my-company", "email": "company@test.com"}'
-```
+**Third-Party Inspection Companies (Vendor Inspeksi)**
 
-## 📋 API Endpoints
+You conduct tests for multiple clients across multiple sites. CertiTrack organizes your work, standardizes your output, and gives clients confidence in your professionalism.
 
-### Authentication
-- `POST /api/v1/auth/login` - User login
-- `POST /api/v1/auth/register` - Register user
-- `POST /api/v1/auth/register-company` - Register company + admin
+**Heavy Logistics & Offshore Contractors**
 
-### Assets
-- `GET /api/v1/assets` - List assets (paginated, filterable)
-- `POST /api/v1/assets` - Create asset
-- `GET /api/v1/assets/{id}` - Get asset details
-- `PUT /api/v1/assets/{id}` - Update asset
-- `DELETE /api/v1/assets/{id}` - Soft delete asset
-- `GET /api/v1/assets/scan/{qr_data}` - Get asset by QR
-
-### Tests
-- `GET /api/v1/tests` - List tests
-- `POST /api/v1/tests` - Create test
-- `POST /api/v1/tests/submit` - Submit test results (auto-validates)
-- `POST /api/v1/tests/{id}/validate` - Re-validate test
-
-### Certificates
-- `GET /api/v1/certificates` - List certificates
-- `POST /api/v1/certificates/generate` - Generate certificate
-- `GET /api/v1/certificates/{id}/download` - Download PDF
-- `GET /api/v1/certificates/verify/{number}` - Public verification
-
-### Dashboard
-- `GET /api/v1/dashboard/summary` - Dashboard stats
-- `GET /api/v1/dashboard/expiring-assets` - Expiring certificates
-- `GET /api/v1/dashboard/test-trends` - Test analytics
-
-## 🔒 Security
-
-- JWT-based authentication with refresh tokens
-- Role-based access control (Super Admin, Company Admin, Inspector, Viewer)
-- Multi-tenant data isolation by company
-- Password hashing with bcrypt
-- Digital signature on certificates
-
-## 📊 Workflow
-
-```
-┌──────────────────────────────────────────────────────────────┐
-│                        CertiTrack Workflow                    │
-├──────────────────────────────────────────────────────────────┤
-│                                                               │
-│   ┌─────────┐    ┌─────────┐    ┌──────────┐    ┌─────────┐ │
-│   │ 1. SCAN │ -> │ 2. TEST │ -> │ 3.VALIDATE│ -> │ 4. CERT │ │
-│   │ QR Code │    │ Input   │    │ Auto     │    │ Generate│ │
-│   └─────────┘    └─────────┘    └──────────┘    └─────────┘ │
-│       │              │              │               │        │
-│       v              v              v               v        │
-│   Asset Info    Test Data      PASS/FAIL      PDF Ready     │
-│   Retrieved     Recorded       Instantly      Download      │
-│                                                               │
-└──────────────────────────────────────────────────────────────┘
-```
-
-## 🔄 ERPNext Integration
-
-CertiTrack is designed for seamless integration with ERPNext:
-
-1. **API Compatibility**: RESTful JSON API matches ERPNext patterns
-2. **Data Sync**: Assets, Tests, and Certificates can sync via webhooks
-3. **Authentication**: API key support for server-to-server auth
-4. **Python Native**: Same technology stack as ERPNext/Frappe
-
-Example integration:
-```python
-from frappe_client import FrappeClient
-
-# Push asset to ERPNext
-client = FrappeClient("https://erp.company.com", "api_key", "api_secret")
-client.insert({
-    "doctype": "Asset",
-    "asset_name": asset.name,
-    "asset_category": asset.category,
-    "custom_certitrack_id": str(asset.id),
-})
-```
-
-## 🎨 UI/UX
-
-The frontend features a modern, minimalist design inspired by Gumroad:
-- Clean typography and generous whitespace
-- Vibrant coral/orange accent color (#ff6b35)
-- Smooth animations and transitions
-- Mobile-responsive design
-- Dark sidebar navigation
-
-## 📝 License
-
-MIT License - feel free to use for commercial projects.
-
-## 🤝 Contributing
-
-Contributions welcome! Please read our contributing guidelines first.
-
-## 📞 Support
-
-For questions or support, please open an issue on GitHub.
+Your equipment moves between sites and vessels. Tracking certification status across a mobile fleet is impossible on paper. CertiTrack makes it simple.
 
 ---
 
-**CertiTrack** - From hours to seconds. Eliminate human error. Stay compliant.
+## What Changes
 
+| Before CertiTrack | After CertiTrack |
+|-------------------|------------------|
+| Certificates in filing cabinets | Searchable digital archive |
+| Expiry dates tracked in Excel (maybe) | Automated alerts 30/14/7 days ahead |
+| Manual pass/fail calculation | Instant automated validation |
+| Paper certificates easily forged | QR-verified digital certificates |
+| No visibility for management | Real-time compliance dashboard |
+| Hours to prepare for audit | Audit-ready in minutes |
+
+---
+
+## Technical Overview
+
+For those who need the details:
+
+- **Backend**: Python (FastAPI), PostgreSQL, Redis
+- **Frontend**: Next.js, TypeScript, Tailwind CSS
+- **Deployment**: Docker, runs on any cloud or on-premise server
+- **API**: RESTful, designed for integration with ERPNext and other ERP systems
+
+Full technical documentation is available in the `/docs` directory.
+
+---
+
+## Getting Started
+
+```bash
+# Clone the repository
+git clone https://github.com/your-org/certitrack.git
+
+# Start with Docker
+cd certitrack
+docker-compose up -d
+
+# Access the application
+# Frontend: http://localhost:3000
+# API Docs: http://localhost:8000/api/docs
+```
+
+Create your first company account at `/register`, then start adding assets.
+
+---
+
+## License
+
+MIT License. Use it, modify it, deploy it.
+
+---
+
+## Contact
+
+Questions about implementation or customization? Open an issue or reach out directly.
+
+---
+
+*CertiTrack was built because spreadsheets and filing cabinets are not a certification management system. Heavy equipment deserves better. The people working around it deserve better.*
