@@ -139,47 +139,226 @@ Your equipment moves between sites and vessels. Tracking certification status ac
 
 ---
 
-## Technical Overview
+## Features
 
-For those who need the details:
+| Category | Features |
+|----------|----------|
+| **Asset Management** | Asset registry, QR code generation, photo attachments, location tracking |
+| **Test Management** | Test submission, automated validation, pass/fail determination, test history |
+| **Certificates** | PDF generation, digital signature, QR verification, expiry tracking |
+| **Dashboard** | Summary stats, category breakdown, expiring assets, recent activity |
+| **Alerts** | Email notifications for expiring certificates (30/14/7 days) |
+| **Authentication** | JWT-based auth, role-based access (Admin, Inspector, Viewer) |
+| **Multi-tenant** | Company isolation, each organization sees only their data |
 
-- **Backend**: Python (FastAPI), PostgreSQL, Redis
-- **Frontend**: Next.js, TypeScript, Tailwind CSS
-- **Deployment**: Docker, runs on any cloud or on-premise server
-- **API**: RESTful, designed for integration with ERPNext and other ERP systems
+---
 
-Full technical documentation is available in the `/docs` directory.
+## Tech Stack
+
+| Component | Technology |
+|-----------|------------|
+| **Frontend** | Next.js 14, TypeScript, Tailwind CSS, React Query |
+| **Backend** | FastAPI (Python 3.11+), Pydantic, SQLAlchemy |
+| **Database** | PostgreSQL (production), SQLite (development) |
+| **Authentication** | JWT with OAuth2, bcrypt password hashing |
+| **PDF Generation** | ReportLab, WeasyPrint |
+| **QR Code** | python-qrcode |
+| **Task Queue** | Celery + Redis |
+| **Containerization** | Docker, Docker Compose |
+
+---
+
+## Architecture
+
+```
+CertiTrack/
+├── backend/                 # FastAPI Python Backend
+│   ├── app/
+│   │   ├── api/            # API Routes (assets, tests, certificates, users)
+│   │   ├── models/         # SQLAlchemy Models
+│   │   ├── schemas/        # Pydantic Schemas
+│   │   ├── services/       # Business Logic (PDF, QR, validation)
+│   │   └── config.py       # Configuration
+│   ├── static/             # Generated files (QR codes, PDFs)
+│   └── requirements.txt
+│
+├── frontend/               # Next.js Frontend
+│   ├── src/
+│   │   ├── app/           # App Router (pages)
+│   │   ├── components/    # UI Components
+│   │   └── lib/           # API client, utilities, store
+│   └── package.json
+│
+├── docker-compose.yml      # Full stack orchestration
+└── README.md
+```
 
 ---
 
 ## Getting Started
 
+### Option 1: Docker (Recommended)
+
+The fastest way to run CertiTrack with all dependencies.
+
 ```bash
-# Clone the repository
+# Clone repository
 git clone https://github.com/your-org/certitrack.git
-
-# Start with Docker
 cd certitrack
-docker-compose up -d
 
-# Access the application
-# Frontend: http://localhost:3000
-# API Docs: http://localhost:8000/api/docs
+# Start all services
+docker-compose up -d --build
+
+# Check status
+docker-compose ps
 ```
 
-Create your first company account at `/register`, then start adding assets.
+Access:
+- Frontend: http://localhost:3000
+- API: http://localhost:8000
+- API Docs: http://localhost:8000/api/docs
+
+### Option 2: Local Development (SQLite)
+
+For development without Docker.
+
+**Backend:**
+
+```bash
+cd backend
+
+# Create virtual environment
+python -m venv venv
+venv\Scripts\activate  # Windows
+source venv/bin/activate  # macOS/Linux
+
+# Install dependencies
+pip install -r requirements.txt
+pip install aiosqlite
+
+# Start server
+python run.py
+```
+
+**Frontend:**
+
+```bash
+cd frontend
+
+# Install dependencies
+npm install
+
+# Start development server
+npm run dev
+```
+
+### Option 3: Local Development (PostgreSQL)
+
+For production-like environment.
+
+```bash
+# Set database URL
+$env:DATABASE_URL = "postgresql+asyncpg://postgres:password@localhost:5432/certitrack"
+
+# Then follow backend/frontend setup above
+```
+
+---
+
+## First Login
+
+1. Open http://localhost:3000/register
+2. Create company account with admin credentials
+3. Login at http://localhost:3000/login
+
+Or via API:
+
+```bash
+curl -X POST "http://localhost:8000/api/v1/auth/register-company?admin_email=admin@test.com&admin_password=password123&admin_name=Admin" \
+  -H "Content-Type: application/json" \
+  -d '{"name": "My Company", "slug": "my-company", "email": "company@test.com"}'
+```
+
+---
+
+## API Endpoints
+
+### Authentication
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/api/v1/auth/login` | User login |
+| POST | `/api/v1/auth/register` | Register user |
+| POST | `/api/v1/auth/register-company` | Register company + admin |
+| POST | `/api/v1/auth/refresh` | Refresh access token |
+
+### Assets
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/v1/assets` | List assets (paginated, filterable) |
+| POST | `/api/v1/assets` | Create asset |
+| GET | `/api/v1/assets/{id}` | Get asset details |
+| PUT | `/api/v1/assets/{id}` | Update asset |
+| DELETE | `/api/v1/assets/{id}` | Soft delete asset |
+| GET | `/api/v1/assets/scan/{qr_data}` | Get asset by QR code |
+
+### Tests
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/v1/tests` | List tests |
+| POST | `/api/v1/tests` | Create test |
+| POST | `/api/v1/tests/submit` | Submit test with auto-validation |
+| POST | `/api/v1/tests/{id}/validate` | Re-validate existing test |
+
+### Certificates
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/v1/certificates` | List certificates |
+| POST | `/api/v1/certificates/generate` | Generate certificate |
+| GET | `/api/v1/certificates/{id}` | Get certificate details |
+| GET | `/api/v1/certificates/{id}/download` | Download PDF |
+| GET | `/api/v1/certificates/verify/{number}` | Public verification |
+| POST | `/api/v1/certificates/{id}/revoke` | Revoke certificate |
+
+### Dashboard
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/v1/dashboard/summary` | Dashboard statistics |
+| GET | `/api/v1/dashboard/expiring-assets` | Assets with expiring certificates |
+| GET | `/api/v1/dashboard/test-trends` | Test analytics |
+
+---
+
+## Security
+
+- JWT-based authentication with access and refresh tokens
+- Role-based access control: Super Admin, Company Admin, Inspector, Viewer
+- Multi-tenant data isolation by company_id
+- Password hashing with bcrypt
+- CORS configured for frontend origin
+- Digital signature on generated certificates
+
+---
+
+## Environment Variables
+
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `DATABASE_URL` | PostgreSQL connection string | SQLite (dev) |
+| `SECRET_KEY` | JWT signing key | change-me-in-production |
+| `REDIS_URL` | Redis connection for Celery | redis://localhost:6379 |
+| `CORS_ORIGINS` | Allowed frontend origins | http://localhost:3000 |
 
 ---
 
 ## License
 
-MIT License. Use it, modify it, deploy it.
+MIT License. Free for commercial use.
 
 ---
 
-## Contact
+## Contributing
 
-Questions about implementation or customization? Open an issue or reach out directly.
+Contributions welcome. Please open an issue first to discuss proposed changes.
 
 ---
 
