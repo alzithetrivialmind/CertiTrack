@@ -6,7 +6,9 @@
 
 ## The Problem
 
-In Indonesian shipyards (galangan kapal), heavy lifting equipment like cranes, shackles, and wire ropes must be tested and certified regularly. This is not optional—it's a legal requirement under Permenaker No. 8/2020 and international maritime standards.
+Heavy lifting equipment—cranes, hoists, forklifts, shackles, wire ropes, chain slings—must be tested and certified regularly. This applies across industries: shipyards, construction sites, manufacturing plants, mining operations, oil & gas facilities, warehouses, and logistics hubs.
+
+Regulations like Indonesia's Permenaker No. 8/2020, OSHA standards, and international codes (LOLER, ASME) mandate periodic inspection and certification. Non-compliance means operational shutdowns, legal liability, and most critically, risk to human life.
 
 Yet the reality on the ground is far from compliant.
 
@@ -16,7 +18,7 @@ Yet the reality on the ground is far from compliant.
 
 Certificates live in filing cabinets. Test records are scattered across Excel files, WhatsApp groups, and handwritten logbooks. When an auditor asks for documentation, staff spend hours—sometimes days—digging through archives.
 
-One shipyard manager told us: *"We have 200+ assets. Finding one certificate can take half a day."*
+A plant manager once said: *"We have 200+ assets across three sites. Finding one certificate can take half a day."*
 
 **2. Expired Certificates Go Unnoticed**
 
@@ -50,7 +52,7 @@ Management has no dashboard. No real-time view of how many assets are compliant,
 | Insurance claim denied | Equipment not properly certified |
 | Reputation damage | Loss of future contracts |
 
-These are not hypothetical. They happen every year in shipyards across Indonesia.
+These are not hypothetical. They happen every year across industries—on construction sites, in factories, at ports, and in warehouses.
 
 ---
 
@@ -114,15 +116,31 @@ Make decisions based on data, not assumptions.
 
 **Shipyards (Galangan Kapal)**
 
-You operate dozens or hundreds of cranes, hoists, and lifting accessories. Compliance is mandatory for port operations. CertiTrack keeps you audit-ready at all times.
+Cranes, hoists, and lifting gear are critical for ship construction and repair. Port authorities and classification societies require valid certificates. CertiTrack keeps you audit-ready.
 
-**Third-Party Inspection Companies (Vendor Inspeksi)**
+**Construction Companies**
 
-You conduct tests for multiple clients across multiple sites. CertiTrack organizes your work, standardizes your output, and gives clients confidence in your professionalism.
+Tower cranes, mobile cranes, hoists, and lifting accessories on job sites. Safety inspections are mandatory before equipment can operate. Track everything across multiple projects.
 
-**Heavy Logistics & Offshore Contractors**
+**Manufacturing & Factories**
 
-Your equipment moves between sites and vessels. Tracking certification status across a mobile fleet is impossible on paper. CertiTrack makes it simple.
+Overhead cranes, forklifts, chain hoists on the production floor. Equipment failure means production stops and worker injuries. Maintain compliance without disrupting operations.
+
+**Mining Operations**
+
+Heavy machinery in harsh environments. Remote sites make manual tracking even harder. Digital records accessible from anywhere.
+
+**Oil & Gas**
+
+Offshore platforms and onshore facilities with strict HSE requirements. Third-party audits are frequent. Be ready with complete documentation.
+
+**Logistics & Warehousing**
+
+Forklifts, pallet jacks, dock levelers across distribution centers. High equipment turnover requires systematic tracking.
+
+**Third-Party Inspection Companies**
+
+You conduct tests for clients across industries. CertiTrack standardizes your workflow, organizes records by client, and delivers professional certificates that build trust.
 
 ---
 
