@@ -9,12 +9,13 @@ import Cookies from 'js-cookie'
  * 3. Fallback to localhost
  */
 function getApiUrl(): string {
-  // Use environment variable if set
-  if (process.env.NEXT_PUBLIC_API_URL) {
+  // Use environment variable if set (highest priority)
+  if (process.env.NEXT_PUBLIC_API_URL && process.env.NEXT_PUBLIC_API_URL.trim() !== '') {
     return process.env.NEXT_PUBLIC_API_URL
   }
   
   // Auto-detect for network access (when accessed from other devices)
+  // This works in both Docker and local development
   if (typeof window !== 'undefined') {
     const hostname = window.location.hostname
     
@@ -32,7 +33,7 @@ function getApiUrl(): string {
     }
   }
   
-  // Default fallback to localhost
+  // Default fallback to localhost (for local development)
   return 'http://localhost:8000/api/v1'
 }
 
