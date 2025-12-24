@@ -29,7 +29,7 @@ import { Badge } from '@/components/ui/badge'
 import { Loading } from '@/components/ui/loading'
 import { Modal } from '@/components/ui/modal'
 import { assetsApi, testsApi, certificatesApi } from '@/lib/api'
-import { formatDate, formatAssetType, getDaysUntilExpiry, getExpiryStatus, getApiErrorMessage } from '@/lib/utils'
+import { formatDate, formatAssetType, getDaysUntilExpiry, getExpiryStatus, getApiErrorMessage, getStaticFileUrl } from '@/lib/utils'
 
 export default function AssetDetailPage() {
   const params = useParams()
@@ -441,18 +441,21 @@ export default function AssetDetailPage() {
         size="sm"
       >
         <div className="text-center">
-          {asset.qr_code_url ? (
+          {asset.qr_code ? (
             <>
               <img 
-                src={asset.qr_code_url} 
+                src={getStaticFileUrl(asset.qr_code) || ''} 
                 alt="QR Code" 
                 className="w-48 h-48 mx-auto mb-4 border rounded-lg"
               />
               <p className="text-sm text-dark-500 mb-4">
                 Scan this QR code to quickly access asset information
               </p>
+              <p className="text-xs text-dark-400 mb-4 font-mono">
+                {asset.qr_data || 'N/A'}
+              </p>
               <a 
-                href={asset.qr_code_url} 
+                href={getStaticFileUrl(asset.qr_code) || ''} 
                 download={`${asset.asset_code}-qr.png`}
               >
                 <Button variant="outline">

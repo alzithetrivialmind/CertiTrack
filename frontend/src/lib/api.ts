@@ -1,7 +1,33 @@
 import axios from 'axios'
 import Cookies from 'js-cookie'
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1'
+/**
+ * Get API URL - supports network access from other devices
+ * Priority:
+ * 1. NEXT_PUBLIC_API_URL environment variable
+ * 2. Auto-detect from current hostname (for network access)
+ * 3. Fallback to localhost
+ */
+function getApiUrl(): string {
+  // Use environment variable if set
+  if (process.env.NEXT_PUBLIC_API_URL) {
+    return process.env.NEXT_PUBLIC_API_URL
+  }
+  
+  // Auto-detect for network access (when accessed from other devices)
+  if (typeof window !== 'undefined') {
+    const hostname = window.location.hostname
+    // If not localhost, use the same hostname for API (network access)
+    if (hostname !== 'localhost' && hostname !== '127.0.0.1') {
+      return `http://${hostname}:8000/api/v1`
+    }
+  }
+  
+  // Default fallback
+  return 'http://localhost:8000/api/v1'
+}
+
+const API_URL = getApiUrl()
 
 export const api = axios.create({
   baseURL: API_URL,

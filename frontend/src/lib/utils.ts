@@ -118,3 +118,37 @@ export function getApiErrorMessage(error: any, fallback: string = 'An error occu
   return fallback
 }
 
+/**
+ * Construct full URL for static files (QR codes, PDFs, etc.)
+ * Backend serves static files at /static, so we need to construct the full URL
+ * Supports network access by auto-detecting hostname
+ */
+export function getStaticFileUrl(relativePath: string | null | undefined): string | null {
+  if (!relativePath) return null
+  
+  // If already a full URL, return as is
+  if (relativePath.startsWith('http://') || relativePath.startsWith('https://')) {
+    return relativePath
+  }
+  
+  // Get API base URL (supports network access)
+  let apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1'
+  
+  // Auto-detect for network access (when accessed from other devices)
+  if (typeof window !== 'undefined' && !process.env.NEXT_PUBLIC_API_URL) {
+    const hostname = window.location.hostname
+    // If not localhost, use the same hostname for API (network access)
+    if (hostname !== 'localhost' && hostname !== '127.0.0.1') {
+      apiUrl = `http://${hostname}:8000/api/v1`
+    }
+  }
+  
+  // Extract base URL (remove /api/v1)
+  const baseUrl = apiUrl.replace('/api/v1', '')
+  
+  // Ensure relative path starts with /
+  const path = relativePath.startsWith('/') ? relativePath : `/${relativePath}`
+  
+  return `${baseUrl}${path}`
+}
+
