@@ -5,7 +5,7 @@ import Cookies from 'js-cookie'
  * Get API URL - supports network access from other devices
  * Priority:
  * 1. NEXT_PUBLIC_API_URL environment variable
- * 2. Auto-detect from current hostname (for network access)
+ * 2. Auto-detect from current window location (for network access)
  * 3. Fallback to localhost
  */
 function getApiUrl(): string {
@@ -17,22 +17,33 @@ function getApiUrl(): string {
   // Auto-detect for network access (when accessed from other devices)
   if (typeof window !== 'undefined') {
     const hostname = window.location.hostname
-    // If not localhost, use the same hostname for API (network access)
-    if (hostname !== 'localhost' && hostname !== '127.0.0.1') {
-      return `http://${hostname}:8000/api/v1`
+    
+    // Always use the same hostname as the frontend (for network access)
+    // If accessed via http://192.168.1.100:3000, API will be http://192.168.1.100:8000
+    // This works for both localhost and IP addresses
+    if (hostname) {
+      // Check if it's a local network IP (192.168.x.x, 10.x.x.x, 172.16-31.x.x)
+      const isLocalNetworkIP = /^(192\.168\.|10\.|172\.(1[6-9]|2[0-9]|3[0-1])\.)/.test(hostname)
+      
+      // If it's an IP address or not localhost, use it for API
+      if (isLocalNetworkIP || (hostname !== 'localhost' && hostname !== '127.0.0.1')) {
+        return `http://${hostname}:8000/api/v1`
+      }
     }
   }
   
-  // Default fallback
+  // Default fallback to localhost
   return 'http://localhost:8000/api/v1'
 }
 
 const API_URL = getApiUrl()
 
 // Log API URL for debugging (only in development)
-if (typeof window !== 'undefined' && process.env.NODE_ENV === 'development') {
+if (typeof window !== 'undefined') {
   console.log('🔗 API URL:', API_URL)
-  console.log('🌐 Current hostname:', window.location.hostname)
+  console.log('🌐 Current URL:', window.location.href)
+  console.log('🌐 Hostname:', window.location.hostname)
+  console.log('🌐 Origin:', window.location.origin)
 }
 
 export const api = axios.create({
