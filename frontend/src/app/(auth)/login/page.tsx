@@ -53,7 +53,15 @@ export default function LoginPage() {
       toast.success('Welcome back!')
       router.push('/dashboard')
     } catch (error: any) {
-      toast.error(getApiErrorMessage(error, 'Login failed'))
+      // Enhanced error logging for network issues
+      console.error('Login error:', error)
+      if (error.code === 'ECONNREFUSED' || error.code === 'ERR_NETWORK') {
+        console.error('Network error - API might not be accessible')
+        console.error('API URL:', process.env.NEXT_PUBLIC_API_URL || 'auto-detected')
+        toast.error('Cannot connect to server. Please check if the backend is running and accessible.')
+      } else {
+        toast.error(getApiErrorMessage(error, 'Login failed'))
+      }
     } finally {
       setIsLoading(false)
     }

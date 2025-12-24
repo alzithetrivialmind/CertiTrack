@@ -29,11 +29,19 @@ function getApiUrl(): string {
 
 const API_URL = getApiUrl()
 
+// Log API URL for debugging (only in development)
+if (typeof window !== 'undefined' && process.env.NODE_ENV === 'development') {
+  console.log('🔗 API URL:', API_URL)
+  console.log('🌐 Current hostname:', window.location.hostname)
+}
+
 export const api = axios.create({
   baseURL: API_URL,
   headers: {
     'Content-Type': 'application/json',
   },
+  // Don't use withCredentials since we use Authorization header
+  // withCredentials: true,  // Not needed when using Authorization header
 })
 
 // Request interceptor to add auth token

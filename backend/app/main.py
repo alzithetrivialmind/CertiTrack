@@ -64,30 +64,32 @@ app = FastAPI(
 )
 
 # CORS middleware
-# In development, allow all origins for network access
-# In production, use specific origins from settings
+# In development, use regex to allow any origin (for network access)
+# In production, use specific origins
 cors_origins = [
     "http://localhost:3000",
     "http://127.0.0.1:3000",
     settings.frontend_url,
 ]
 
-# In development, allow all origins (for network access from other devices)
-# Note: When allow_origins=["*"], credentials must be False
-# But we use Authorization header for auth, so this is OK
 if settings.app_env == "development" or settings.debug:
-    cors_origins = ["*"]
-    allow_credentials = False  # Required when using "*"
+    # Allow any HTTP origin in development (for network access)
+    # This regex matches any IP address or hostname on port 3000
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origin_regex=r"http://.*:3000",
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
 else:
-    allow_credentials = True
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=cors_origins,
-    allow_credentials=allow_credentials,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=cors_origins,
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
 
 # Static files
 static_path = os.path.join(os.path.dirname(__file__), "..", "static")
